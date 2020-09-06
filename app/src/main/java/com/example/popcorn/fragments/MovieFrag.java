@@ -1,28 +1,38 @@
-package com.example.popcorn.activity;
+package com.example.popcorn.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.popcorn.MainActivity;
 import com.example.popcorn.R;
+import com.example.popcorn.menu.SearchFrag;
 import com.example.popcorn.obj.Movie;
-import com.example.popcorn.tasks.HttpPOSTTask;
 import com.example.popcorn.utils.ConstantUtils;
+import com.example.popcorn.utils.FragmentUtils;
 import com.example.popcorn.utils.GeneralUtils;
 import com.example.popcorn.utils.SQLiteUtils;
 import com.example.popcorn.utils.WSCallsUtils;
+import com.example.popcorn.utils.WSCallsUtilsTaskCaller;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
-public class MovieActivity extends Activity {
+public class MovieFrag extends Fragment
+{
+    private final int REQ_CODE_DOWNLOAD = 101;
+
 
     private SQLiteUtils sqLiteUtils;
     private Movie movie;
@@ -36,14 +46,13 @@ public class MovieActivity extends Activity {
     private Button btnDownload;
     private ImageView imgIMDb;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movie);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.frag_movie, container, false);
 
         //get movie from intent
-        Intent intent = getIntent();
-        String strMovie = intent.getStringExtra("movie");
+        String strMovie = getArguments().getString("movie");
         if(strMovie != null)
         {
             try
@@ -60,12 +69,12 @@ public class MovieActivity extends Activity {
                 this.movie = new Movie(id, title, torrentURL, year, rating, coverImage, description);
 
                 //set views
-                setImgCoverImage();
-                setTxtTitle();
-                setTxtYear();
-                setTxtRating();
-                setTxtDescription();
-                setBtnDownload();
+                setImgCoverImage(view);
+                setTxtTitle(view);
+                setTxtYear(view);
+                setTxtRating(view);
+                setTxtDescription(view);
+                setBtnDownload(view);
 
                 //set onClick listeners
                 btnDownloadListener();
@@ -81,46 +90,48 @@ public class MovieActivity extends Activity {
         }else
         {
             // go back to search intent
-            Intent searchIntent = new Intent(this, SearchActivity.class);
-            startActivity(searchIntent);
+            SearchFrag searchFrag = new SearchFrag();
+            FragmentUtils.startFragment(((MainActivity)getActivity()).getSupportFragmentManager(), searchFrag, R.id.fragContainer, ((MainActivity)getActivity()).getSupportActionBar(), "Search", true, false, true, null);
 
         }
+
+        return view;
     }
 
-    public void setImgCoverImage() {
-        this.imgCoverImage = findViewById(R.id.imgCoverImage);
+    public void setImgCoverImage(View view) {
+        this.imgCoverImage = view.findViewById(R.id.imgCoverImage);
         Picasso.get()
                 .load(this.movie.getCoverImage())
                 .resize(150, 200)
                 .into(this.imgCoverImage);
     }
 
-    public void setTxtTitle() {
-        this.txtTitle = findViewById(R.id.txtTitle);
+    public void setTxtTitle(View view) {
+        this.txtTitle = view.findViewById(R.id.txtTitle);
         this.txtTitle.setText(this.movie.getTitle());
     }
 
-    public void setTxtYear() {
-        this.txtYear = findViewById(R.id.txtYear);
+    public void setTxtYear(View view) {
+        this.txtYear = view.findViewById(R.id.txtYear);
 
         String year = Long.toString(this.movie.getYear());
         this.txtYear.setText(year);
     }
 
-    public void setTxtRating() {
-        this.txtRating = findViewById(R.id.txtRating);
+    public void setTxtRating(View view) {
+        this.txtRating = view.findViewById(R.id.txtRating);
 
         String rating = "IMDb " + this.movie.getRating();
         this.txtRating.setText(rating);
     }
 
-    public void setTxtDescription() {
-        this.txtDescription = findViewById(R.id.txtDescription);
+    public void setTxtDescription(View view) {
+        this.txtDescription = view.findViewById(R.id.txtDescription);
         this.txtDescription.setText(this.movie.getDescription());
     }
 
-    public void setBtnDownload() {
-        this.btnDownload = findViewById(R.id.btnDownload);
+    public void setBtnDownload(View view) {
+        this.btnDownload = view.findViewById(R.id.btnDownload);
     }
 
     public void btnDownloadListener()
@@ -131,21 +142,40 @@ public class MovieActivity extends Activity {
 
                 try
                 {
-                    GeneralUtils.makeToast(getApplicationContext(), "Downloading...");
+                    GeneralUtils.makeToast(getActivity(), "Downloading...");
 
-                    JSONObject jsonObject = new JSONObject();
+                    JSONObject body = new JSONObject();
                     String url = movie.getTorrentURL();
                     String magnetCode = url.replace("https://yts.mx/torrent/download/", "");
-                    jsonObject.put("torrentURL", magnetCode);
+                    body.put("torrentURL", magnetCode);
 
-                    HttpPOSTTask httpPOSTTask = new HttpPOSTTask();
-                    JSONObject response = httpPOSTTask.execute(ConstantUtils.GLOBAL_POPCORN_WS_DOWNLOAD_TORRENT_URL, jsonObject.toString()).get();
+                    WSCallsUtils.post(new WSCallsUtilsTaskCaller() {
+                        @Override
+                        public void taskCompleted(String response, int reqCode)
+                        {
+                            if(response != null)
+                            {
+                                if(reqCode == REQ_CODE_DOWNLOAD)
+                                {
+                                    GeneralUtils.makeToast(getActivity(), response);
+                                }
+                            }else
+                            {
+
+                            }
+                        }
+
+                        @Override
+                        public Activity getActivity() {
+                            return null;
+                        }
+                    }, ConstantUtils.GLOBAL_POPCORN_URL + "/rest/popcorn/download", body.toString(), REQ_CODE_DOWNLOAD);
+
 
                 }catch(Exception e)
                 {
-                    String message = "\n\nError Message: " + e.getMessage() +
-                            "\nURL: " + ConstantUtils.GLOBAL_POPCORN_WS_DOWNLOAD_TORRENT_URL +
-                            "\nMethod: genericGET" +
+                    String message = "\n\nError: " + e.getMessage() +
+                            "\nMethod: btnDownloadListener" +
                             "\nCreatedTime: " + GeneralUtils.getCurrentDateTime();
                     Log.d(ConstantUtils.TAG, message);
                 }

@@ -1,24 +1,16 @@
 package com.example.popcorn.utils;
 
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
 import com.example.popcorn.obj.Movie;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 
 public class SQLiteUtils extends SQLiteOpenHelper {
 
@@ -168,8 +160,8 @@ public class SQLiteUtils extends SQLiteOpenHelper {
 
         String query = "SELECT title FROM " + MOVIE_TABLE;
         Cursor cursor = db.rawQuery(query, null, null);
-        while(cursor != null && cursor.getCount() > 0) {
-
+        while(cursor != null && cursor.getCount() > 0)
+        {
             toReturn = new ArrayList<>();
             cursor.moveToFirst();
             for(int i = 0; i < cursor.getCount(); i++)
@@ -220,12 +212,25 @@ public class SQLiteUtils extends SQLiteOpenHelper {
     {
         long toReturn = 0;
 
-        String query = "SELECT * FROM "+MOVIE_TABLE+"";
+        try
+        {
+            String query = "SELECT * FROM "+MOVIE_TABLE+"";
 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, null, null);
-        toReturn = cursor.getCount();
-        cursor.close();
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor cursor = db.rawQuery(query, null, null);
+
+            if(cursor != null)
+            {
+                toReturn = cursor.getCount();
+                cursor.close();
+            }
+
+        }catch(Exception e)
+        {
+            Log.d(ConstantUtils.TAG,"Error: " + e.getMessage()
+            + "Method: SQLiteUtils - getTotalNumberMovies"
+            + "CreatedTime: " + GeneralUtils.getCurrentDateTime());
+        }
 
         return toReturn;
     }

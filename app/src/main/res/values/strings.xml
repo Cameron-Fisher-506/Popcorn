@@ -3,4 +3,6 @@
     <string name="refresh">Refresh</string>
     <string name="movie">Movie</string>
     <string name="search">Search</string>
+
+    <string name="dummy_text">dummy</string>
 </resources>

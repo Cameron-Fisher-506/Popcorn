@@ -1,6 +1,5 @@
-package com.example.popcorn.activity;
-import android.app.Activity;
-import android.content.Context;
+package com.example.popcorn.menu;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,62 +13,66 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.popcorn.MainActivity;
 import com.example.popcorn.R;
+import com.example.popcorn.fragments.MovieFrag;
 import com.example.popcorn.obj.Movie;
+import com.example.popcorn.utils.FragmentUtils;
 import com.example.popcorn.utils.SQLiteUtils;
 import com.squareup.picasso.Picasso;
-
 import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.List;
 
-
-
-public class SearchActivity extends Activity {
-
+public class SearchFrag extends Fragment
+{
     private SearchView svMovie;
     private ListView lvMovies;
     private ArrayList<Movie> movies;
     private MovieAdapter movieAdapter;
     private SQLiteUtils sqLiteUtils;
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.frag_search, container, false);
 
         //set views
-        setSvMovie();
+        setSvMovie(view);
 
         //get movies from sqlite
-        this.sqLiteUtils = new SQLiteUtils(this);
+        this.sqLiteUtils = new SQLiteUtils(getActivity());
 
         setMovies(this.sqLiteUtils.getMovies());
 
         setMovieAdapter(getMovies());
 
-        setLvMovies(getMovieAdapter());
+        setLvMovies(view, getMovieAdapter());
 
         addLvMoviesListener();
 
         addSvMovieListener();
 
-
-
+        return view;
     }
 
     private void addSvMovieListener()
     {
         this.svMovie.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
+            public boolean onQueryTextSubmit(String query)
+            {
 
                 return false;
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
+            public boolean onQueryTextChange(String newText)
+            {
 
                 movieAdapter.getFilter().filter(newText);
 
@@ -87,16 +90,20 @@ public class SearchActivity extends Activity {
                 Movie movie = (Movie) adapter.getItemAtPosition(position);
                 JSONObject jsonObjectMovie = movie.getJSONObject();
 
-                Intent movieIntent = new Intent(getApplicationContext(), MovieActivity.class);
-                movieIntent.putExtra("movie", jsonObjectMovie.toString());
-                startActivity(movieIntent);
+                Bundle bundle = new Bundle();
+                bundle.putString("movie", jsonObjectMovie.toString());
+
+                MovieFrag movieFrag = new MovieFrag();
+                movieFrag.setArguments(bundle);
+
+                FragmentUtils.startFragment(((MainActivity)getActivity()).getSupportFragmentManager(), movieFrag, R.id.fragContainer, ((MainActivity)getActivity()).getSupportActionBar(), movie.getTitle(), true, false, true, null);
             }
         });
     }
 
-    private void setSvMovie()
+    private void setSvMovie(View view)
     {
-        this.svMovie = findViewById(R.id.svMovie);
+        this.svMovie = view.findViewById(R.id.svMovie);
         this.svMovie.setIconifiedByDefault(true);
         this.svMovie.setFocusable(true);
         this.svMovie.setIconified(false);
@@ -112,9 +119,9 @@ public class SearchActivity extends Activity {
         return this.movies;
     }
 
-    private void setLvMovies(MovieAdapter movieAdapter)
+    private void setLvMovies(View view, MovieAdapter movieAdapter)
     {
-        this.lvMovies = findViewById(R.id.lvMovies);
+        this.lvMovies = view.findViewById(R.id.lvMovies);
         this.lvMovies.setAdapter(movieAdapter);
     }
 
@@ -133,14 +140,14 @@ public class SearchActivity extends Activity {
 
         private ArrayList<Movie> movies;
         private ArrayList<Movie> filteredData;
-        private ItemFilter itemFilter;
+        private MovieAdapter.ItemFilter itemFilter;
 
 
         private class ItemFilter extends Filter {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
 
-                String filterString = constraint.toString().toLowerCase();
+                String filterString = constraint.toString().toLowerCase().trim();
 
                 FilterResults results = new FilterResults();
 
@@ -181,7 +188,7 @@ public class SearchActivity extends Activity {
         {
             this.movies = movies;
             this.filteredData = movies;
-            this.itemFilter = new ItemFilter();
+            this.itemFilter = new MovieAdapter.ItemFilter();
         }
 
         @Override
@@ -229,8 +236,4 @@ public class SearchActivity extends Activity {
 
 
     }
-
 }
-
-
-

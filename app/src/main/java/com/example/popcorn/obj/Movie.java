@@ -1,10 +1,8 @@
 package com.example.popcorn.obj;
 
 import android.util.Log;
-
 import com.example.popcorn.utils.ConstantUtils;
 import com.example.popcorn.utils.GeneralUtils;
-
 import org.json.JSONObject;
 
 public class Movie {

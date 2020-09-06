@@ -1,55 +1,84 @@
 package com.example.popcorn;
-import android.app.Activity;
-import android.content.Intent;
+
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ImageButton;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
-import com.example.popcorn.activity.MovieActivity;
-import com.example.popcorn.activity.SearchActivity;
-import com.example.popcorn.tasks.HttpGETTask;
-import com.example.popcorn.utils.SQLiteUtils;
+import com.example.popcorn.menu.HomeFrag;
+import com.example.popcorn.menu.MenuFrag;
+import com.example.popcorn.menu.RefreshFrag;
+import com.example.popcorn.menu.SearchFrag;
+import com.example.popcorn.utils.FragmentUtils;
 
-import org.json.JSONArray;
-
-
-public class MainActivity extends Activity {
-
-    private SQLiteUtils sqLiteUtils;
+public class MainActivity extends AppCompatActivity
+{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.sqLiteUtils = new SQLiteUtils(this);
+        //set the custom toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
 
-        Button btnRefresh = findViewById(R.id.btnRefresh);
+        HomeFrag homeFrag = new HomeFrag();
+        FragmentUtils.startFragment(getSupportFragmentManager(), homeFrag, R.id.fragContainer, getSupportActionBar(), "Home", true, false, true, null);
+
+        addBtnRefreshListener();
+        addBtnSearchListener();
+        addBtnHomeListener();
+        addBtnMenuListner();
+    }
+
+    private void addBtnRefreshListener()
+    {
+        ImageButton btnRefresh = findViewById(R.id.btnRefresh);
         btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                try
-                {
-                    HttpGETTask httpGETTask = new HttpGETTask();
-                    JSONArray movies = httpGETTask.execute().get();
-                    sqLiteUtils.cacheMovies(movies);
-
-                }catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
+            public void onClick(View v)
+            {
+                RefreshFrag refreshFrag = new RefreshFrag();
+                FragmentUtils.startFragment(getSupportFragmentManager(), refreshFrag, R.id.fragContainer, getSupportActionBar(), "Refresh Movies", true, false, true, null);
             }
         });
+    }
 
-        Button btnSearch = findViewById(R.id.btnSearch);
+    private void addBtnSearchListener()
+    {
+        ImageButton btnSearch = findViewById(R.id.btnSearch);
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent searchIntent = new Intent(getApplicationContext(), SearchActivity.class);
-                startActivity(searchIntent);
+                SearchFrag searchFrag = new SearchFrag();
+                FragmentUtils.startFragment(getSupportFragmentManager(), searchFrag,R.id.fragContainer, getSupportActionBar(), "Search", true, false, true, null);
             }
         });
+    }
 
+    private void addBtnHomeListener()
+    {
+        ImageButton btnHome = findViewById(R.id.btnHome);
+        btnHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HomeFrag homeFrag = new HomeFrag();
+                FragmentUtils.startFragment(getSupportFragmentManager(), homeFrag, R.id.fragContainer, getSupportActionBar(), "Home", true, false, true, null);
+            }
+        });
+    }
+
+    private void addBtnMenuListner()
+    {
+        ImageButton btnMenu = findViewById(R.id.btnMenu);
+        btnMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MenuFrag menuFrag = new MenuFrag();
+                FragmentUtils.startFragment(getSupportFragmentManager(), menuFrag, R.id.fragContainer, getSupportActionBar(), "Menu", true, false, true, null);
+            }
+        });
     }
 }
