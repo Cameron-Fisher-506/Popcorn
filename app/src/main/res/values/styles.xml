@@ -7,7 +7,7 @@
 
     <!-- Customize your theme here. -->
     <style name="CustomToolbarStyle" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:background">@color/lightGrey</item>
+        <item name="android:background">@color/retro_pink</item>
     </style>
 
     <style name="CustomPopupStyle" parent="Theme.AppCompat.Light.NoActionBar">

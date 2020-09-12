@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activity.SearchActivity">
+    android:layout_height="match_parent">
 
 
     <ImageView
@@ -30,6 +29,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="5dp"
+        android:textColor="@color/retro_puple"
         android:text="Title"
         app:layout_constraintStart_toEndOf="@+id/imgCoverImage"
         app:layout_constraintTop_toTopOf="parent" />
@@ -41,6 +41,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
         android:layout_marginTop="5dp"
+        android:textColor="@color/retro_puple"
         android:text="Year"
         app:layout_constraintStart_toEndOf="@+id/imgCoverImage"
         app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
@@ -53,6 +54,8 @@
         android:layout_marginLeft="32dp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
+        android:background="@color/retro_yellow"
+        android:textStyle="bold"
         android:text="IMDb"
         app:layout_constraintStart_toEndOf="@+id/imgCoverImage"
         app:layout_constraintTop_toBottomOf="@+id/txtYear" />

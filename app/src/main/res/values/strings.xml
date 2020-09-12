@@ -5,4 +5,9 @@
     <string name="search">Search</string>
 
     <string name="dummy_text">dummy</string>
+
+    //Auto Refresh
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="auto_refresh_instructions">Auto refresh will retrieve all of the latest available torrents from YTS every 24 hours.</string>
 </resources>
