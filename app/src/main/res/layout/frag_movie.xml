@@ -5,6 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
    >
+    <include
+        android:id="@+id/notify"
+        layout="@layout/notification_bar_ip"
+        />
 
     <ImageView
         android:id="@+id/imgCoverImage"
@@ -14,7 +18,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.056"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/notify"
         tools:src="@tools:sample/avatars[0]" />
 
     <TextView
@@ -29,7 +33,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/imgCoverImage"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/notify" />
 
     <TextView
         android:id="@+id/txtYear"
@@ -44,15 +48,28 @@
         app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
 
     <TextView
-        android:id="@+id/txtRating"
+        android:id="@+id/txtIMDB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
         android:layout_marginTop="16dp"
         android:background="@color/retro_yellow"
-        android:text="Rating"
+        android:textStyle="bold"
+        android:text="IMDB"
         app:layout_constraintStart_toEndOf="@+id/imgCoverImage"
+        app:layout_constraintTop_toBottomOf="@+id/txtYear" />
+
+    <TextView
+        android:id="@+id/txtRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/retro_puple"
+        android:text="Rating"
+        app:layout_constraintStart_toEndOf="@+id/txtIMDB"
         app:layout_constraintTop_toBottomOf="@+id/txtYear" />
 
     <TextView

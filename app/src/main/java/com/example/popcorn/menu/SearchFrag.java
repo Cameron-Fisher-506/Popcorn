@@ -228,7 +228,7 @@ public class SearchFrag extends Fragment
             txtYear.setText(year);
 
             TextView txtRating = convertView.findViewById(R.id.txtRating);
-            String rating = "IMDb " + this.filteredData.get(position).getRating();
+            String rating = Double.toString(this.filteredData.get(position).getRating());
             txtRating.setText(rating);
 
             return convertView;

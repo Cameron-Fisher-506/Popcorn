@@ -47,7 +47,7 @@
         app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
 
     <TextView
-        android:id="@+id/txtRating"
+        android:id="@+id/txtIMDB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -58,5 +58,18 @@
         android:textStyle="bold"
         android:text="IMDb"
         app:layout_constraintStart_toEndOf="@+id/imgCoverImage"
+        app:layout_constraintTop_toBottomOf="@+id/txtYear" />
+
+    <TextView
+        android:id="@+id/txtRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:textColor="@color/retro_puple"
+        android:text="rating"
+        app:layout_constraintStart_toEndOf="@+id/txtIMDB"
         app:layout_constraintTop_toBottomOf="@+id/txtYear" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,11 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include
+        android:id="@+id/notify"
+        layout="@layout/notification_bar_ip"
+        />
+
     <TextView
         android:id="@+id/txtInstructions"
         android:layout_width="match_parent"
@@ -20,7 +25,7 @@
         android:text="@string/auto_refresh_instructions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/notify" />
 
     <Switch
         android:id="@+id/switchAutoRefresh"

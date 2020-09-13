@@ -1,17 +1,17 @@
 package com.example.popcorn;
 
-import android.media.Image;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import com.example.popcorn.menu.ComingSoonFrag;
 import com.example.popcorn.menu.HomeFrag;
 import com.example.popcorn.menu.MenuFrag;
 import com.example.popcorn.menu.RefreshFrag;
 import com.example.popcorn.menu.SearchFrag;
+import com.example.popcorn.services.UpdatePiAddressService;
 import com.example.popcorn.utils.FragmentUtils;
 
 public class MainActivity extends AppCompatActivity
@@ -29,8 +29,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         //set the custom toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
-        setSupportActionBar(toolbar);
+        wireUI();
+
+        startService(new Intent(this, UpdatePiAddressService.class));
 
         addBtnRefreshListener();
         addBtnSearchListener();
@@ -42,6 +43,12 @@ public class MainActivity extends AppCompatActivity
         FragmentUtils.startFragment(getSupportFragmentManager(), homeFrag, R.id.fragContainer, getSupportActionBar(), "Home", true, false, true, null);
 
         setNavIcons(true, false, false, false);
+    }
+
+    private void wireUI()
+    {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
     }
 
     private void addBtnComingSoon()

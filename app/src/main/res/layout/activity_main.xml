@@ -30,7 +30,6 @@
         </FrameLayout>
     </ScrollView>
 
-
     <include
         android:id="@+id/navContainer"
         layout="@layout/frag_nav"

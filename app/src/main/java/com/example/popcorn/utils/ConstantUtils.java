@@ -2,7 +2,7 @@ package com.example.popcorn.utils;
 
 public class ConstantUtils {
 
-    public static final String GLOBAL_POPCORN_URL = "http://10.0.0.101:8080";
+    public static String GLOBAL_POPCORN_URL = null;
 
     public static final String TAG = "POPCORN";
 
