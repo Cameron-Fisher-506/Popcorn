@@ -47,61 +47,92 @@ public class SQLiteUtils extends SQLiteOpenHelper {
 
     public void cacheMovies(JSONArray movies)
     {
-        SQLiteDatabase dbWrite = this.getWritableDatabase();
-        SQLiteDatabase dbRead = this.getReadableDatabase();
+        SQLiteDatabase dbWrite = null;
+        SQLiteDatabase dbRead = null;
 
         try
         {
 
-            //get all cached movies
-            HashMap<Long, String> movieMap = new HashMap<Long, String>();
+            dbWrite = this.getWritableDatabase();
+            dbRead = this.getReadableDatabase();
 
-            String query = "SELECT * FROM " + MOVIE_TABLE;
-            Cursor cursor = dbRead.rawQuery(query, null, null);
-            if(cursor != null && cursor.getCount() > 0)
+            if(dbWrite != null && dbRead != null)
             {
-                for(int i = 0; i < cursor.getCount(); i++)
+                //get all cached movies
+                HashMap<Long, String> movieMap = new HashMap<Long, String>();
+
+                String query = "SELECT * FROM " + MOVIE_TABLE;
+                Cursor cursor = dbRead.rawQuery(query, null, null);
+                if(cursor != null && cursor.getCount() > 0)
                 {
-                    Long id = cursor.getLong(0);
-                    String title = cursor.getString(1);
-
-                    movieMap.put(id, title);
-                }
-            }
-
-            if(movies != null && movies.length() > 0)
-            {
-                for(int i = 0; i < movies.length(); i++)
-                {
-                    JSONObject movie = movies.getJSONObject(i);
-
-                    Long id = movie.getLong("id");
-                    String title = movie.getString("title");
-                    String torrentURL = movie.getString("torrentURL");
-                    Long year = movie.getLong("year");
-                    double rating = movie.getDouble("rating");
-                    String coverImage = movie.getString("coverImage");
-                    String description = movie.getString("description");
-
-                    //check if movie is already cached
-                    String cachedTitle = movieMap.get(id);
-                    if(cachedTitle == null)
+                    while(cursor.moveToNext())
                     {
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put("id", id);
-                        contentValues.put("title", title);
-                        contentValues.put("torrentURL", torrentURL);
-                        contentValues.put("year", year);
-                        contentValues.put("rating", rating);
-                        contentValues.put("coverImage", coverImage);
-                        contentValues.put("description", description);
+                        Long id = cursor.getLong(0);
+                        String title = cursor.getString(1);
 
-                        Log.d(ConstantUtils.TAG, contentValues.toString());
+                        movieMap.put(id, title);
+                    }
+                }
 
-                        dbWrite.insert(MOVIE_TABLE, null, contentValues);
+                if(movies != null && movies.length() > 0)
+                {
+                    for(int i = 0; i < movies.length(); i++)
+                    {
+                        JSONObject movie = movies.getJSONObject(i);
+
+                        if(movie != null)
+                        {
+                            Long id = movie.has("id")? movie.getLong("id") : null;
+                            String title = movie.has("title") ? movie.getString("title") : null;
+
+                            String torrentURL = null;
+                            if(movie.has("torrents"))
+                            {
+                                JSONArray torrents = movie.getJSONArray("torrents");
+                                if(torrents != null && torrents.length() > 0)
+                                {
+                                    JSONObject torrent = torrents.getJSONObject(0);
+                                    if(torrent != null && torrent.has("url"))
+                                    {
+                                        torrentURL = torrent.getString("url");
+                                    }
+
+                                }
+                            }
+
+                            Long year = movie.has("year") ? movie.getLong("year") : null;
+                            Double rating = movie.has("rating") ? movie.getDouble("rating") : null;
+                            String coverImage = movie.has("large_cover_image") ? movie.getString("large_cover_image") : null;
+                            String description = movie.has("description_full") ? movie.getString("description_full") : null;
+
+                            //check if movie is already cached
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put("id", id);
+                            contentValues.put("title", title);
+                            contentValues.put("torrentURL", torrentURL);
+                            contentValues.put("year", year);
+                            contentValues.put("rating", rating);
+                            contentValues.put("coverImage", coverImage);
+                            contentValues.put("description", description);
+
+                            Log.d(ConstantUtils.TAG, contentValues.toString());
+
+                            if(movieMap != null && movieMap.size() > 0)
+                            {
+                                String cachedTitle = movieMap.get(id);
+                                if(cachedTitle == null)
+                                {
+                                    dbWrite.insert(MOVIE_TABLE, null, contentValues);
+                                }
+                            }else
+                            {
+                                dbWrite.insert(MOVIE_TABLE, null, contentValues);
+                            }
+                        }
                     }
                 }
             }
+
         }catch (Exception e)
         {
             String message = "\n\nError Message: " + e.getMessage() +
@@ -177,33 +208,53 @@ public class SQLiteUtils extends SQLiteOpenHelper {
 
     public ArrayList<Movie> getMovies()
     {
-        ArrayList<Movie> toReturn = null;
+        ArrayList<Movie> toReturn = new ArrayList<>();
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase dbRead = null;
 
-        String query = "SELECT * FROM " + MOVIE_TABLE;
-        Cursor cursor = db.rawQuery(query, null, null);
-
-        if(cursor != null && cursor.getCount() > 0)
+        try
         {
-            toReturn = new ArrayList<>();
-            cursor.moveToFirst();
-            for(int i = 0; i < cursor.getCount(); i++)
+            dbRead = this.getReadableDatabase();
+
+            if(dbRead != null)
             {
-                Long id = cursor.getLong(0);
-                String title = cursor.getString(1);
-                String torrentURL = cursor.getString(2);
-                Long year = cursor.getLong(3);
-                Double rating = cursor.getDouble(4);
-                String coverImage = cursor.getString(5);
-                String description = cursor.getString(6);
+                String query = "SELECT * FROM " + MOVIE_TABLE;
+                Cursor cursor = dbRead.rawQuery(query, null, null);
 
-                Movie movie = new Movie(id, title, torrentURL, year, rating, coverImage, description);
-                toReturn.add(movie);
+                if(cursor != null && cursor.getCount() > 0)
+                {
+                    while(cursor.moveToNext())
+                    {
+                        Long id = cursor.getLong(0);
+                        String title = cursor.getString(1);
+                        String torrentURL = cursor.getString(2);
+                        Long year = cursor.getLong(3);
+                        Double rating = cursor.getDouble(4);
+                        String coverImage = cursor.getString(5);
+                        String description = cursor.getString(6);
 
-                cursor.moveToNext();
+                        Movie movie = new Movie(id, title, torrentURL, year, rating, coverImage, description);
+                        toReturn.add(movie);
+                    }
+                }
+            }
+
+        }catch(Exception e)
+        {
+            String message = "\n\nError Message: " + e.getMessage() +
+                    "\nClass: SQLiteUtils" +
+                    "\nMethod: getMovies" +
+                    "\nCreatedTime: " + GeneralUtils.getCurrentDateTime();
+            Log.d(ConstantUtils.TAG, message);
+        }finally
+        {
+            if(dbRead != null)
+            {
+                dbRead.close();
+                dbRead = null;
             }
         }
+
 
         return toReturn;
     }

@@ -4,6 +4,8 @@ public class ConstantUtils {
 
     public static String GLOBAL_POPCORN_URL = null;
 
+    public static final String YTS_URL = "https://yts.mx/api/v2";
+
     public static final String TAG = "POPCORN";
 
     //REQUEST METHODS

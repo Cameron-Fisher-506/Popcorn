@@ -12,6 +12,8 @@ import com.example.popcorn.utils.SQLiteUtils;
 import com.example.popcorn.utils.WSCallsUtils;
 import com.example.popcorn.utils.WSCallsUtilsTaskCaller;
 import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -21,6 +23,9 @@ public class AutoRefreshService extends Service
 
     private Timer timer;
     private TimerTask timerTask;
+
+    private TimerTask refreshTimerTask;
+
 
     private SQLiteUtils sqLiteUtils;
 
@@ -60,48 +65,78 @@ public class AutoRefreshService extends Service
 
             this.timer = null;
         }
+
     }
 
     private void refresh()
     {
         try
         {
-            WSCallsUtils.get(new WSCallsUtilsTaskCaller() {
+
+
+            this.refreshTimerTask = new TimerTask()
+            {
+                int pageNumber = 1;
                 @Override
-                public void taskCompleted(String response, int reqCode)
+                public void run()
                 {
-                    if(response != null)
-                    {
-                        if(reqCode == REQ_CODE_GET_ALL_MOVIES)
+
+                    WSCallsUtils.get(new WSCallsUtilsTaskCaller() {
+                        @Override
+                        public void taskCompleted(String response, int reqCode)
                         {
-                            try
+                            if(response != null)
                             {
-                                JSONArray movies = new JSONArray(response);
-                                sqLiteUtils.cacheMovies(movies);
-                            }catch(Exception e)
+                                if(reqCode == REQ_CODE_GET_ALL_MOVIES)
+                                {
+                                    try
+                                    {
+                                        JSONObject jsonObject = new JSONObject(response);
+                                        if(jsonObject != null && jsonObject.has("data"))
+                                        {
+                                            JSONObject data = jsonObject.getJSONObject("data");
+                                            if(data != null && data.has("movies"))
+                                            {
+                                                JSONArray movies = data.getJSONArray("movies");
+                                                sqLiteUtils.cacheMovies(movies);
+                                            }else
+                                            {
+                                                refreshTimerTask.cancel();
+                                            }
+                                        }
+
+                                    }catch(Exception e)
+                                    {
+
+                                        Log.e(ConstantUtils.TAG, "\nError: " + e.getMessage()
+                                                + "\nResponse: " + response
+                                                + "\nReqCode: " + reqCode
+                                                + "\nMethod: MainActivity - onCreate"
+                                                + "\nCreatedTime: " + GeneralUtils.getCurrentDateTime());
+                                    }
+                                }
+                            }else
                             {
-                                Log.e(ConstantUtils.TAG, "\nError: " + e.getMessage()
-                                        + "\nResponse: " + response
+                                refreshTimerTask.cancel();
+
+                                Log.e(ConstantUtils.TAG, "\nResponse: " + response
                                         + "\nReqCode: " + reqCode
-                                        + "\nMethod: MainActivity - onCreate"
+                                        + "\nMethod: AutoRefreshService - refresh"
                                         + "\nCreatedTime: " + GeneralUtils.getCurrentDateTime());
                             }
-
                         }
-                    }else
-                    {
-                        Log.e(ConstantUtils.TAG, "\nResponse: " + response
-                                + "\nReqCode: " + reqCode
-                                + "\nMethod: AutoRefreshService - refresh"
-                                + "\nCreatedTime: " + GeneralUtils.getCurrentDateTime());
-                    }
-                }
 
-                @Override
-                public Activity getActivity() {
-                    return null;
+                        @Override
+                        public Activity getActivity() {
+                            return null;
+                        }
+                    }, ConstantUtils.YTS_URL + "/list_movies.json?page=" + pageNumber, REQ_CODE_GET_ALL_MOVIES);
+
+                    pageNumber++;
                 }
-            }, ConstantUtils.GLOBAL_POPCORN_URL + "/rest/popcorn/getAllMovies", REQ_CODE_GET_ALL_MOVIES);
+            };
+
+            this.timer.scheduleAtFixedRate(this.refreshTimerTask, 0, 60000);
 
 
         }catch(Exception e)

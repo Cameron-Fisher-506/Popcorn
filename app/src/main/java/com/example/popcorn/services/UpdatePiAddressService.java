@@ -12,8 +12,6 @@ import androidx.annotation.Nullable;
 import com.example.popcorn.utils.ConstantUtils;
 import com.example.popcorn.utils.WSCallsUtils;
 import com.example.popcorn.utils.WSCallsUtilsTaskCaller;
-
-import java.net.InetAddress;
 import java.util.Timer;
 import java.util.TimerTask;
 

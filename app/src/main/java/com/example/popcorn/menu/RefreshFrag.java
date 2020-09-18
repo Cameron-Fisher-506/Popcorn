@@ -2,6 +2,7 @@ package com.example.popcorn.menu;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,10 @@ import androidx.fragment.app.Fragment;
 import com.example.popcorn.R;
 import com.example.popcorn.services.AutoRefreshService;
 import com.example.popcorn.utils.ConstantUtils;
+import com.example.popcorn.utils.GeneralUtils;
+import com.example.popcorn.utils.SharedPreferencesUtils;
+
+import org.json.JSONObject;
 
 public class RefreshFrag extends Fragment
 {
@@ -29,6 +34,7 @@ public class RefreshFrag extends Fragment
         wireUI(view);
 
         setAutoRefreshListener(view);
+        setSwitchAutoRefresh();
 
         return view;
     }
@@ -37,6 +43,7 @@ public class RefreshFrag extends Fragment
     {
         this.txtNotify = (TextView) view.findViewById(R.id.txtNotify);
         this.txtNotify.setVisibility(View.GONE);
+
     }
 
     private void setAutoRefreshListener(View view)
@@ -46,9 +53,14 @@ public class RefreshFrag extends Fragment
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
             {
-                if(ConstantUtils.GLOBAL_POPCORN_URL != null)
+                txtNotify.setVisibility(View.GONE);
+
+                try
                 {
-                    txtNotify.setVisibility(View.GONE);
+                    JSONObject autoRefresh = new JSONObject();
+                    autoRefresh.put("isStart", isChecked);
+
+                    SharedPreferencesUtils.save(getContext(), SharedPreferencesUtils.AUTO_REFRESH, autoRefresh);
 
                     if(isChecked)
                     {
@@ -57,12 +69,13 @@ public class RefreshFrag extends Fragment
                     {
                         stopService();
                     }
-
-                }else
+                }catch(Exception e)
                 {
-                    stopService();
-                    txtNotify.setVisibility(View.VISIBLE);
+                    Log.e(ConstantUtils.TAG, "\nError: " + e.getMessage()
+                            + "\nMethod: RefreshFrag - setAutoRefreshListener"
+                            + "\nCreatedTime: " + GeneralUtils.getCurrentDateTime());
                 }
+
             }
         });
     }
@@ -81,5 +94,27 @@ public class RefreshFrag extends Fragment
         getActivity().stopService(autoRefreshService);
 
         this.switchAutoRefresh.setChecked(false);
+    }
+
+    private void setSwitchAutoRefresh()
+    {
+        JSONObject jsonObject =  SharedPreferencesUtils.get(getContext(), SharedPreferencesUtils.AUTO_REFRESH);
+        if(jsonObject != null && jsonObject.has("isStart"))
+        {
+            try
+            {
+                boolean isAutoTrade = jsonObject.getBoolean("isStart");
+                this.switchAutoRefresh.setChecked(isAutoTrade);
+            }catch(Exception e)
+            {
+                Log.e(ConstantUtils.TAG, "\nError: " + e.getMessage()
+                        + "\nMethod: AutoTradeFrag - setSwitchAutoRefresh"
+                        + "\nCreatedTime: " + GeneralUtils.getCurrentDateTime());
+            }
+
+        }else
+        {
+            this.switchAutoRefresh.setChecked(false);
+        }
     }
 }
