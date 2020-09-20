@@ -5,7 +5,10 @@ import com.example.popcorn.utils.ConstantUtils;
 import com.example.popcorn.utils.GeneralUtils;
 import org.json.JSONObject;
 
-public class Movie {
+import java.util.Comparator;
+
+public class Movie implements Comparable<Movie>
+{
 
     private Long id;
     private String title;
@@ -116,4 +119,51 @@ public class Movie {
 
         return toReturn;
     }
+
+    @Override
+    public int compareTo(Movie o) {
+        return o.getYear().compareTo(this.getYear());
+    }
+
+    public static Comparator<Movie> sortByTitleAscending = new Comparator<Movie>() {
+        @Override
+        public int compare(Movie o1, Movie o2) {
+            return o1.getTitle().compareTo(o2.getTitle());
+        }
+    };
+
+    public static Comparator<Movie> sortByTitleDescending = new Comparator<Movie>() {
+        @Override
+        public int compare(Movie o1, Movie o2) {
+            return o2.getTitle().compareTo(o1.getTitle());
+        }
+    };
+
+    public static Comparator<Movie> sortByYearAscending = new Comparator<Movie>() {
+        @Override
+        public int compare(Movie o1, Movie o2) {
+            return o1.getYear().compareTo(o2.getYear());
+        }
+    };
+
+    public static Comparator<Movie> sortByYearDescending = new Comparator<Movie>() {
+        @Override
+        public int compare(Movie o1, Movie o2) {
+            return o2.getYear().compareTo(o1.getYear());
+        }
+    };
+
+    public static Comparator<Movie> sortByRatingAscending = new Comparator<Movie>() {
+        @Override
+        public int compare(Movie o1, Movie o2) {
+            return o1.getRating().compareTo(o2.getRating());
+        }
+    };
+
+    public static Comparator<Movie> sortByRatingDescending = new Comparator<Movie>() {
+        @Override
+        public int compare(Movie o1, Movie o2) {
+            return o2.getRating().compareTo(o1.getRating());
+        }
+    };
 }

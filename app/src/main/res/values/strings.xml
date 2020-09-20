@@ -13,4 +13,13 @@
 
     //MENU
     <string name="update_pi_address">Update Pi Address (Service)</string>
+    
+    <string-array name="movieSort">
+        <item>Year: Newest</item>
+        <item>Year: Oldest</item>
+        <item>Title: A-Z</item>
+        <item>Title: Z-A</item>
+        <item>Rating: Highest</item>
+        <item>Rating: Lowest</item>
+    </string-array>
 </resources>
