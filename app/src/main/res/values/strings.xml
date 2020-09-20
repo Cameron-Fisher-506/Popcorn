@@ -10,4 +10,7 @@
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="auto_refresh_instructions">Auto refresh will retrieve all of the latest available torrents from YTS every 24 hours.</string>
+
+    //MENU
+    <string name="update_pi_address">Update Pi Address (Service)</string>
 </resources>

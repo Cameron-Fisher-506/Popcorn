@@ -103,8 +103,12 @@ public class RefreshFrag extends Fragment
         {
             try
             {
-                boolean isAutoTrade = jsonObject.getBoolean("isStart");
-                this.switchAutoRefresh.setChecked(isAutoTrade);
+                Boolean isAutoTrade = jsonObject.getBoolean("isStart");
+                if(isAutoTrade != null)
+                {
+                    this.switchAutoRefresh.setChecked(isAutoTrade);
+                }
+
             }catch(Exception e)
             {
                 Log.e(ConstantUtils.TAG, "\nError: " + e.getMessage()

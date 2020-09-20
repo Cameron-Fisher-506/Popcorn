@@ -8,6 +8,7 @@ import org.json.JSONObject;
 public class SharedPreferencesUtils {
 
     public static final String AUTO_REFRESH = "AUTO_REFRESH";
+    public static final String AUTO_UPDATE_PI_ADDRESS = "AUTO_UPDATE_PI_ADDRESS";
 
 
     public static void save(Context context, String sharedPrefName, JSONObject jsonObject){

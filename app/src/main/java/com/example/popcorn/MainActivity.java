@@ -2,6 +2,7 @@ package com.example.popcorn;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,7 +13,12 @@ import com.example.popcorn.menu.MenuFrag;
 import com.example.popcorn.menu.RefreshFrag;
 import com.example.popcorn.menu.SearchFrag;
 import com.example.popcorn.services.UpdatePiAddressService;
+import com.example.popcorn.utils.ConstantUtils;
 import com.example.popcorn.utils.FragmentUtils;
+import com.example.popcorn.utils.GeneralUtils;
+import com.example.popcorn.utils.SharedPreferencesUtils;
+
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -31,7 +37,7 @@ public class MainActivity extends AppCompatActivity
         //set the custom toolbar
         wireUI();
 
-        startService(new Intent(this, UpdatePiAddressService.class));
+        startUpdatePiAddressService();
 
         addBtnRefreshListener();
         addBtnSearchListener();
@@ -43,6 +49,25 @@ public class MainActivity extends AppCompatActivity
         FragmentUtils.startFragment(getSupportFragmentManager(), homeFrag, R.id.fragContainer, getSupportActionBar(), "Home", true, false, true, null);
 
         setNavIcons(true, false, false, false);
+    }
+
+    private void startUpdatePiAddressService()
+    {
+        try
+        {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("isStart", true);
+
+            SharedPreferencesUtils.save(this,SharedPreferencesUtils.AUTO_UPDATE_PI_ADDRESS, jsonObject);
+
+            startService(new Intent(this, UpdatePiAddressService.class));
+        }catch(Exception e)
+        {
+            Log.e(ConstantUtils.TAG, "\nError: " + e.getMessage()
+                    + "\nMethod: MainActivity - startUpdatePiAddressService"
+                    + "\nCreatedTime: " + GeneralUtils.getCurrentDateTime());
+        }
+
     }
 
     private void wireUI()
