@@ -11,15 +11,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.popcorn.MainActivity;
 import com.example.popcorn.R;
 import com.example.popcorn.adapters.MovieAdapter;
 import com.example.popcorn.obj.Movie;
 import com.example.popcorn.utils.ConstantUtils;
-import com.example.popcorn.utils.GeneralUtils;
 import com.example.popcorn.utils.SQLiteUtils;
 
 import java.util.Collections;
@@ -31,7 +30,7 @@ public class HomeFrag extends Fragment
     private SQLiteUtils sqLiteUtils;
     private Spinner spinnerMovieSort;
 
-    private LinearLayoutManager layoutManager;
+    private GridLayoutManager layoutManager;
     private RecyclerView recyclerView;
     private MovieAdapter movieAdapter;
     private List<Movie> movies;
@@ -51,15 +50,17 @@ public class HomeFrag extends Fragment
 
     private void initMovieAdapter(View view)
     {
-        this.layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        this.layoutManager = new GridLayoutManager(getContext(), 2);
+        this.layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
         this.recyclerView = view.findViewById(R.id.movieRecyclerView);
+        this.recyclerView.setLayoutManager(layoutManager);
 
         this.movies = this.sqLiteUtils.getMovies();
         Collections.sort(movies);
-        this.recyclerView.setLayoutManager(layoutManager);
+
         this.movieAdapter = new MovieAdapter((MainActivity)getActivity(), movies);
         this.recyclerView.setAdapter(movieAdapter);
-
 
     }
 

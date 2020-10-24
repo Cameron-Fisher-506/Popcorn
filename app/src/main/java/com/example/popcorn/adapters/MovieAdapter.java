@@ -41,6 +41,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>
             super(view);
 
             this.imgCoverImage = view.findViewById(R.id.imgCoverImage);
+
+            ViewGroup.MarginLayoutParams marginParams = (ViewGroup.MarginLayoutParams) this.imgCoverImage.getLayoutParams();
+            marginParams.setMargins(10, 0, 10, 0);
+            this.imgCoverImage.setLayoutParams(marginParams);
         }
     }
 

@@ -49,6 +49,7 @@ public class SQLiteUtils extends SQLiteOpenHelper {
     {
         SQLiteDatabase dbWrite = null;
         SQLiteDatabase dbRead = null;
+        Cursor cursor = null;
 
         try
         {
@@ -62,7 +63,7 @@ public class SQLiteUtils extends SQLiteOpenHelper {
                 HashMap<Long, String> movieMap = new HashMap<Long, String>();
 
                 String query = "SELECT * FROM " + MOVIE_TABLE;
-                Cursor cursor = dbRead.rawQuery(query, null, null);
+                cursor = dbRead.rawQuery(query, null, null);
                 if(cursor != null && cursor.getCount() > 0)
                 {
                     while(cursor.moveToNext())
@@ -141,16 +142,22 @@ public class SQLiteUtils extends SQLiteOpenHelper {
                     "\nCreatedTime: " + GeneralUtils.getCurrentDateTime();
             Log.d(ConstantUtils.TAG, message);
         }finally {
-            if(dbWrite != null)
+            if(dbWrite != null && dbWrite.isOpen())
             {
                 dbWrite.close();
                 dbWrite = null;
             }
 
-            if(dbRead != null)
+            if(dbRead != null && dbRead.isOpen())
             {
                 dbRead.close();
                 dbRead = null;
+            }
+
+            if(cursor != null)
+            {
+                cursor.close();
+                cursor = null;
             }
         }
 
@@ -160,25 +167,50 @@ public class SQLiteUtils extends SQLiteOpenHelper {
     {
         Movie toReturn = null;
 
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        String query = "SELECT * FROM " + MOVIE_TABLE + " WHERE title like '%"+movieTile+"%'";
-        Cursor cursor = db.rawQuery(query, null, null);
-        if(cursor != null && cursor.getCount() > 0)
+        SQLiteDatabase dbRead = null;
+        Cursor cursor = null;
+        try
         {
-            cursor.moveToFirst();
+            dbRead = this.getReadableDatabase();
 
-            Long id = cursor.getLong(0);
-            String title = cursor.getString(1);
-            String torrentURL = cursor.getString(2);
-            Long year = cursor.getLong(3);
-            Double rating = cursor.getDouble(4);
-            String coverImage = cursor.getString(5);
-            String description = cursor.getString(6);
+            String query = "SELECT * FROM " + MOVIE_TABLE + " WHERE title like '%"+movieTile+"%'";
+            cursor = dbRead.rawQuery(query, null, null);
+            if(cursor != null && cursor.getCount() > 0)
+            {
+                cursor.moveToFirst();
 
-            toReturn = new Movie(id, title, torrentURL, year, rating, coverImage, description);
+                Long id = cursor.getLong(0);
+                String title = cursor.getString(1);
+                String torrentURL = cursor.getString(2);
+                Long year = cursor.getLong(3);
+                Double rating = cursor.getDouble(4);
+                String coverImage = cursor.getString(5);
+                String description = cursor.getString(6);
 
+                toReturn = new Movie(id, title, torrentURL, year, rating, coverImage, description);
+
+            }
+        }catch(Exception e)
+        {
+            Log.d(ConstantUtils.TAG, "\n\nError Message: " + e.getMessage() +
+                    "\nClass: SQLiteUtils" +
+                    "\nMethod: getMovieByTitle" +
+                    "\nCreatedTime: " + GeneralUtils.getCurrentDateTime());
+        }finally
+        {
+            if(dbRead != null && dbRead.isOpen())
+            {
+                dbRead.close();
+                dbRead = null;
+            }
+
+            if(cursor != null)
+            {
+                cursor.close();
+                cursor = null;
+            }
         }
+
 
         return toReturn;
     }
@@ -187,22 +219,47 @@ public class SQLiteUtils extends SQLiteOpenHelper {
     {
         ArrayList<String> toReturn = null;
 
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        String query = "SELECT title FROM " + MOVIE_TABLE;
-        Cursor cursor = db.rawQuery(query, null, null);
-        while(cursor != null && cursor.getCount() > 0)
+        SQLiteDatabase dbRead = null;
+        Cursor cursor = null;
+        try
         {
-            toReturn = new ArrayList<>();
-            cursor.moveToFirst();
-            for(int i = 0; i < cursor.getCount(); i++)
-            {
-                String title = cursor.getString(0);
-                toReturn.add(title);
+            dbRead = this.getReadableDatabase();
 
-                cursor.moveToNext();
+            String query = "SELECT title FROM " + MOVIE_TABLE;
+            cursor = dbRead.rawQuery(query, null, null);
+            while(cursor != null && cursor.getCount() > 0)
+            {
+                toReturn = new ArrayList<>();
+                cursor.moveToFirst();
+                for(int i = 0; i < cursor.getCount(); i++)
+                {
+                    String title = cursor.getString(0);
+                    toReturn.add(title);
+
+                    cursor.moveToNext();
+                }
+            }
+        }catch(Exception e)
+        {
+            Log.d(ConstantUtils.TAG, "\n\nError Message: " + e.getMessage() +
+                "\nClass: SQLiteUtils" +
+                "\nMethod: getMovieTitles" +
+                "\nCreatedTime: " + GeneralUtils.getCurrentDateTime());
+
+        }finally {
+            if(dbRead != null && dbRead.isOpen())
+            {
+                dbRead.close();
+                dbRead = null;
+            }
+
+            if(cursor != null)
+            {
+                cursor.close();
+                cursor = null;
             }
         }
+
         return toReturn;
     }
 
@@ -211,7 +268,7 @@ public class SQLiteUtils extends SQLiteOpenHelper {
         ArrayList<Movie> toReturn = new ArrayList<>();
 
         SQLiteDatabase dbRead = null;
-
+        Cursor cursor = null;
         try
         {
             dbRead = this.getReadableDatabase();
@@ -219,7 +276,7 @@ public class SQLiteUtils extends SQLiteOpenHelper {
             if(dbRead != null)
             {
                 String query = "SELECT * FROM " + MOVIE_TABLE;
-                Cursor cursor = dbRead.rawQuery(query, null, null);
+                cursor = dbRead.rawQuery(query, null, null);
 
                 if(cursor != null && cursor.getCount() > 0)
                 {
@@ -248,10 +305,16 @@ public class SQLiteUtils extends SQLiteOpenHelper {
             Log.d(ConstantUtils.TAG, message);
         }finally
         {
-            if(dbRead != null)
+            if(dbRead != null && dbRead.isOpen())
             {
                 dbRead.close();
                 dbRead = null;
+            }
+
+            if(cursor != null)
+            {
+                cursor.close();
+                cursor = null;
             }
         }
 
@@ -263,17 +326,18 @@ public class SQLiteUtils extends SQLiteOpenHelper {
     {
         long toReturn = 0;
 
+        SQLiteDatabase dbRead = null;
+        Cursor cursor = null;
         try
         {
             String query = "SELECT * FROM "+MOVIE_TABLE+"";
 
-            SQLiteDatabase db = this.getReadableDatabase();
-            Cursor cursor = db.rawQuery(query, null, null);
+            dbRead = this.getReadableDatabase();
+            cursor = dbRead.rawQuery(query, null, null);
 
             if(cursor != null)
             {
                 toReturn = cursor.getCount();
-                cursor.close();
             }
 
         }catch(Exception e)
@@ -281,6 +345,19 @@ public class SQLiteUtils extends SQLiteOpenHelper {
             Log.d(ConstantUtils.TAG,"Error: " + e.getMessage()
             + "Method: SQLiteUtils - getTotalNumberMovies"
             + "CreatedTime: " + GeneralUtils.getCurrentDateTime());
+        }finally {
+
+            if(dbRead != null && dbRead.isOpen())
+            {
+                dbRead.close();
+                dbRead = null;
+            }
+
+            if(cursor != null)
+            {
+                cursor.close();
+                cursor = null;
+            }
         }
 
         return toReturn;
