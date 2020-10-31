@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.popcorn">
+    package="za.co.popcorn">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".MainActivity" android:screenOrientation="portrait">
+        <activity android:name="za.co.popcorn.MainActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,7 +23,7 @@
 
         </activity>
 
-        <receiver android:name=".boot.BootHandler" android:enabled="true" android:exported="true">
+        <receiver android:name="za.co.popcorn.boot.BootHandler" android:enabled="true" android:exported="true">
             <intent-filter android:priority="999">
                 <category android:name="android.intent.category.DEFAULT"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -31,8 +31,8 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".services.UpdatePiAddressService"></service>
-        <service android:name=".services.AutoRefreshService"></service>
+        <service android:name="za.co.popcorn.services.UpdatePiAddressService"></service>
+        <service android:name="za.co.popcorn.services.AutoRefreshService"></service>
     </application>
 
 </manifest>
