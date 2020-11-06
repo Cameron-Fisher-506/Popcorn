@@ -7,6 +7,7 @@ import android.os.IBinder;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import za.co.popcorn.utils.ConstantUtils;
+import za.co.popcorn.utils.FlagUtils;
 import za.co.popcorn.utils.GeneralUtils;
 import za.co.popcorn.utils.SQLiteUtils;
 import za.co.popcorn.utils.WSCallsUtils;
@@ -72,8 +73,7 @@ public class AutoRefreshService extends Service
     {
         try
         {
-
-
+            FlagUtils.updatingMovies = false;
             this.refreshTimerTask = new TimerTask()
             {
                 int pageNumber = 1;
@@ -117,6 +117,7 @@ public class AutoRefreshService extends Service
                                 }
                             }else
                             {
+                                FlagUtils.updatingMovies = false;
                                 refreshTimerTask.cancel();
 
                                 Log.e(ConstantUtils.TAG, "\nResponse: " + response

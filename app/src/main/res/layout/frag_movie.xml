@@ -7,7 +7,7 @@
    >
     <include
         android:id="@+id/notify"
-        layout="@layout/notification_bar_ip"
+        layout="@layout/notification_bar"
         />
 
     <ImageView
@@ -91,7 +91,7 @@
         android:id="@+id/btnDownload"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="10dp"
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
         android:background="@color/retro_green"
@@ -100,6 +100,6 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtRating" />
+        app:layout_constraintTop_toBottomOf="@+id/txtDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

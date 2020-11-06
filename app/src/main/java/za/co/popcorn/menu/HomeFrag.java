@@ -19,6 +19,7 @@ import za.co.popcorn.R;
 import za.co.popcorn.adapters.MovieAdapter;
 import za.co.popcorn.obj.Movie;
 import za.co.popcorn.utils.ConstantUtils;
+import za.co.popcorn.utils.FlagUtils;
 import za.co.popcorn.utils.SQLiteUtils;
 
 import java.util.Collections;
@@ -27,6 +28,7 @@ import java.util.List;
 public class HomeFrag extends Fragment
 {
     private TextView txtNotify;
+    private TextView txtNotifyUpdatingMovies;
     private SQLiteUtils sqLiteUtils;
     private Spinner spinnerMovieSort;
 
@@ -43,9 +45,22 @@ public class HomeFrag extends Fragment
         this.sqLiteUtils = new SQLiteUtils(getContext());
 
         wireUI(view);
+        checkUpdatingMovies(view);
         initMovieAdapter(view);
 
         return view;
+    }
+
+    private void checkUpdatingMovies(View view)
+    {
+        this.txtNotifyUpdatingMovies = (TextView) view.findViewById(R.id.txtNotifyUpdatingMovies);
+        if(!FlagUtils.updatingMovies)
+        {
+            this.txtNotifyUpdatingMovies.setVisibility(View.GONE);
+        }else
+        {
+            this.txtNotifyUpdatingMovies.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initMovieAdapter(View view)

@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import za.co.popcorn.R;
 import za.co.popcorn.services.AutoRefreshService;
 import za.co.popcorn.utils.ConstantUtils;
+import za.co.popcorn.utils.FlagUtils;
 import za.co.popcorn.utils.GeneralUtils;
 import za.co.popcorn.utils.SharedPreferencesUtils;
 
@@ -25,6 +26,7 @@ public class RefreshFrag extends Fragment
     //UI
     private Switch switchAutoRefresh;
     private TextView txtNotify;
+    private TextView txtNotifyUpdatingMovies;
 
     @Nullable
     @Override
@@ -32,11 +34,24 @@ public class RefreshFrag extends Fragment
         View view = inflater.inflate(R.layout.frag_refresh, container, false);
 
         wireUI(view);
+        checkUpdatingMovies(view);
 
         setAutoRefreshListener(view);
         setSwitchAutoRefresh();
 
         return view;
+    }
+
+    private void checkUpdatingMovies(View view)
+    {
+        this.txtNotifyUpdatingMovies = (TextView) view.findViewById(R.id.txtNotifyUpdatingMovies);
+        if(!FlagUtils.updatingMovies)
+        {
+            this.txtNotifyUpdatingMovies.setVisibility(View.GONE);
+        }else
+        {
+            this.txtNotifyUpdatingMovies.setVisibility(View.VISIBLE);
+        }
     }
 
     private void wireUI(View view)
@@ -64,9 +79,13 @@ public class RefreshFrag extends Fragment
 
                     if(isChecked)
                     {
+                        FlagUtils.updatingMovies = true;
+                        txtNotifyUpdatingMovies.setVisibility(View.VISIBLE);
                         startService();
                     }else
                     {
+                        FlagUtils.updatingMovies = false;
+                        txtNotifyUpdatingMovies.setVisibility(View.GONE);
                         stopService();
                     }
                 }catch(Exception e)

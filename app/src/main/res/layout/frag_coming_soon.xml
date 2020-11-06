@@ -5,7 +5,7 @@
 
     <include
         android:id="@+id/notify"
-        layout="@layout/notification_bar_ip"
+        layout="@layout/notification_bar"
         />
 
 </LinearLayout>
